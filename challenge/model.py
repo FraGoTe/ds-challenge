@@ -2,18 +2,13 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-import warnings
 from datetime import datetime
 from typing import Tuple, Union, List
 from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.utils import shuffle
 from sklearn.metrics import confusion_matrix, classification_report
 import joblib
 from pathlib import Path
-
-warnings.filterwarnings('ignore')
-
 from typing import Tuple, Union, List
 
 class DelayModel:
@@ -21,8 +16,26 @@ class DelayModel:
     def __init__(
         self
     ):
-        self._model = None # Model should be saved in this attribute.
-        self._model_path = None
+        #self._model = None # Model should be saved in this attribute.
+        #load a saved model by default
+        self._model_path = 'data/xgboost_model.pkl'
+        self.load_model(self._model_path)
+
+        self.top_10_features = [
+            "OPERA_Latin American Wings", 
+            "MES_7",
+            "MES_10",
+            "OPERA_Grupo LATAM",
+            "MES_12",
+            "TIPOVUELO_I",
+            "MES_4",
+            "MES_11",
+            "OPERA_Sky Airline",
+            "OPERA_Copa Air"
+        ]
+
+    def get_top_10_features(self) -> list:
+        return self.top_10_features
 
     def preprocess(
         self,
@@ -47,16 +60,19 @@ class DelayModel:
 
         threshold_in_minutes = 15
         data['delay'] = np.where(data['min_diff'] > threshold_in_minutes, 1, 0)
+       
+        features = self.feature_format(data)
+        target = data['delay']
+        
+        return features, target
 
-        features = pd.concat([
+    def feature_format(data: pd.DataFrame) -> pd.DataFrame:
+        return  pd.concat([
             pd.get_dummies(data['OPERA'], prefix = 'OPERA'),
             pd.get_dummies(data['TIPOVUELO'], prefix = 'TIPOVUELO'), 
             pd.get_dummies(data['MES'], prefix = 'MES')], 
             axis = 1
         )
-        target = data['delay']
-        
-        return features, target
 
     def fit(
         self,
@@ -87,20 +103,7 @@ class DelayModel:
         features: pd.DataFrame,
         target: pd.DataFrame
     ) -> List:
-        top_10_features = [
-            "OPERA_Latin American Wings", 
-            "MES_7",
-            "MES_10",
-            "OPERA_Grupo LATAM",
-            "MES_12",
-            "TIPOVUELO_I",
-            "MES_4",
-            "MES_11",
-            "OPERA_Sky Airline",
-            "OPERA_Copa Air"
-        ]
-
-        x_train2, x_test2, y_train2, y_test2 = train_test_split(features[top_10_features], target, test_size = 0.30, random_state = 42)
+        x_train2, x_test2, y_train2, y_test2 = train_test_split(features[self.top_10_features], target, test_size = 0.30, random_state = 42)
 
         return x_train2, x_test2, y_train2, y_test2
 
