@@ -3,33 +3,41 @@ name: 'Continuous Integration'
 on:
   push:
     branches:
-      - main
+      - 'feature/*'
+      - 'hotfix/*'
+      - 'release/*'
+      - 'develop'
+      - 'main'
+  pull_request:
+    branches:
+      - 'develop'
+      - 'main'
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        python-version: ['3.10.8']
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    # Step 1: Checkout the code
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Set up Python 3.10.8
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.10.8'  # Update to a supported version
-        env:
-          AGENT_TOOLSDIRECTORY: /opt/hostedtoolcache
+    # Step 2: Set up Google Cloud SDK
+    - name: Set up Google Cloud SDK
+      uses: google-github-actions/auth@v2
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
 
+    - name: Build the Docker image
+      run: |
+        gcloud builds submit --quiet --suppress-logs --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-cloud-run-app-test \
+        --gcs-log-dir=gs://ds-francis-logs/
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements-test.txt  # Install other dependencies
+    - name: Deploy to Cloud Run
+      run: |
+        gcloud run deploy my-cloud-run-app-test --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-cloud-run-app-test --platform managed --region us-central1 --allow-unauthenticated
 
-      #- name: Run api-test
-      #  run: |
-      #    make api-test 
+    - name: Delete Cloud Run service
+      run: |
+        gcloud run services delete my-cloud-run-app-test --region ${{ secrets.GCP_REGION }} --quiet
