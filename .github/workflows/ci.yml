@@ -25,8 +25,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install --upgrade numpy  # Upgrade NumPy
           pip install -r requirements-test.txt  # Install other dependencies
+          pip install numpy --upgrade  # Upgrade NumPy
 
       - name: Run api-test
         run: |
