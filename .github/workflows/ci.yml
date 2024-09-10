@@ -28,7 +28,6 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install gunicorn
           pip install -r requirements-test.txt  # Install other dependencies
 
       #- name: Run api-test
