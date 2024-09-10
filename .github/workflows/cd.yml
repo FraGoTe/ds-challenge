@@ -20,7 +20,6 @@ jobs:
       with:
         project_id: ${{ secrets.GCP_PROJECT_ID }}
         credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-        export_default_credentials: true
 
     # Step 3: Install dependencies
     - name: Install dependencies
