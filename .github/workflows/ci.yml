@@ -40,4 +40,4 @@ jobs:
 
     - name: Delete Cloud Run service
       run: |
-        gcloud run services delete my-cloud-run-app-test --region ${{ secrets.GCP_REGION }} --quiet
+        gcloud run services delete my-cloud-run-app-test --quiet
