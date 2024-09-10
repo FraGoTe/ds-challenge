@@ -16,7 +16,7 @@ class DelayModel:
     def __init__(
         self
     ):
-        #self._model = None # Model should be saved in this attribute.
+        self._model = None # Model should be saved in this attribute.
         #load a saved model by default
         self._model_path = 'data/xgboost_model.pkl'
         self.load_model(self._model_path)
