@@ -30,4 +30,4 @@ jobs:
     # Step 4: Deploy to Google App Engine
     - name: Deploy to App Engine
       run: |
-        gcloud app deploy --quiet
+        gcloud app deploy --quiet --project ${{ secrets.GCP_PROJECT_ID }}
