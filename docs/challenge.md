@@ -17,5 +17,13 @@ This imbalance can cause models to focus on correctly predicting class 0 but bad
 
 As we can see, our main objective is to predict delays. Even if the model accuracy is higher for some models like XGBoost, Logistic Regression, XGBoost with Feature Importance (No Balance), or Logistic Regression with Feature Importance (No Balance), recall and F1-score are too low then, in this case, I will choose *XGBoost with Feature Importance & Balance*
 
+# Deployment
+
+The current CI / CD works as follows:
+
+<img width="456" alt="image" src="https://github.com/user-attachments/assets/d5b068fb-a7c5-4d9b-be56-258ac4df9d60">
 
 
+# API
+
+https://my-cloud-run-app-813988200674.us-central1.run.app/predict
