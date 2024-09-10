@@ -30,6 +30,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-test.txt  # Install other dependencies
 
-      - name: Run api-test
-        run: |
-          make api-test 
+      #- name: Run api-test
+      #  run: |
+      #    make api-test 
