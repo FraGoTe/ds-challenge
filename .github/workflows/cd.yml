@@ -20,27 +20,40 @@ jobs:
       with:
         project_id: ${{ secrets.GCP_PROJECT_ID }}
         credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+
+    - name: Build the Docker image
+      run: |
+        gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-cloud-run-app
+
+    - name: Deploy to Cloud Run
+      run: |
+        gcloud run deploy my-cloud-run-app \
+          --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-cloud-run-app \
+          --platform managed \
+          --allow-unauthenticated
+
+
       
     # Step 3: Authenticate Docker to Google Container Registry (GCR)
-    - name: Authenticate Docker to GCR
-      run: |
-        echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | docker login -u _json_key --password-stdin https://gcr.io
+    #- name: Authenticate Docker to GCR
+    #  run: |
+    #    echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | docker login -u _json_key --password-stdin https://gcr.io
 
     # Step 4: Build the Docker image
-    - name: Build Docker image
-      run: |
-        docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/fastapi-app:$GITHUB_SHA .
+    #- name: Build Docker image
+    #  run: |
+    #    docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/fastapi-app:$GITHUB_SHA .
 
     # Step 5: Push the Docker image to Google Container Registry
-    - name: Push to Google Container Registry
-      run: |
-        docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/fastapi-app:$GITHUB_SHA
+    #- name: Push to Google Container Registry
+    #  run: |
+    #    docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/fastapi-app:$GITHUB_SHA
 
     # Step 6: Deploy to Google Cloud Run
-    - name: Deploy to Google Cloud Run
-      run: |
-        gcloud run deploy fastapi-app \
-          --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/fastapi-app:$GITHUB_SHA \
-          --platform managed \
-          --region us-central1 \
-          --allow-unauthenticated
+    #- name: Deploy to Google Cloud Run
+    #  run: |
+    #    gcloud run deploy fastapi-app \
+    #      --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/fastapi-app:$GITHUB_SHA \
+    #      --platform managed \
+    #      --region us-central1 \
+    #      --allow-unauthenticated
