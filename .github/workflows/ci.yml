@@ -40,4 +40,4 @@ jobs:
 
     - name: Delete Cloud Run service
       run: |
-        gcloud run services delete my-cloud-run-app-test --quiet
+        gcloud run services delete  --region us-central1 my-cloud-run-app-test --quiet
