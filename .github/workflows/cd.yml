@@ -2,10 +2,12 @@ name: 'Continuous Delivery'
 
 on:
   workflow_run:
-    workflows: ['Continuous Integration']
-    branches: ['main']
-      types: 
-        - completed
+    workflows: 
+      - Continuous Integration
+    branches: 
+      - main
+    types: 
+      - completed
 
 jobs:
   deploy:
