@@ -7,6 +7,12 @@ import pandas as pd
 
 app = FastAPI()
 
+@app.get("/", status_code=200)
+async def get_health() -> dict:
+    return {
+        "status": "hello world 🚀"
+    }
+
 @app.get("/health", status_code=200)
 async def get_health() -> dict:
     return {
