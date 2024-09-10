@@ -30,7 +30,8 @@ jobs:
       run: |
         gcloud run deploy my-cloud-run-app \
           --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-cloud-run-app \
-          --platform managed \
+          --platform managed \      
+          --region us-central1 \
           --allow-unauthenticated
 
 
