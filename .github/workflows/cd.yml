@@ -20,15 +20,27 @@ jobs:
       with:
         project_id: ${{ secrets.GCP_PROJECT_ID }}
         credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
-
-    # Step 3: Install dependencies
-    - name: Install dependencies
+      
+    # Step 3: Authenticate Docker to Google Container Registry (GCR)
+    - name: Authenticate Docker to GCR
       run: |
-        python -m pip install --upgrade pip
-        pip install gunicorn
-        pip install -r requirements.txt
+        echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | docker login -u _json_key --password-stdin https://gcr.io
 
-    # Step 4: Deploy to Google App Engine
-    - name: Deploy to App Engine
+    # Step 4: Build the Docker image
+    - name: Build Docker image
       run: |
-        gcloud app deploy --quiet --verbosity=debug
+        docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/fastapi-app:$GITHUB_SHA .
+
+    # Step 5: Push the Docker image to Google Container Registry
+    - name: Push to Google Container Registry
+      run: |
+        docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/fastapi-app:$GITHUB_SHA
+
+    # Step 6: Deploy to Google Cloud Run
+    - name: Deploy to Google Cloud Run
+      run: |
+        gcloud run deploy fastapi-app \
+          --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/fastapi-app:$GITHUB_SHA \
+          --platform managed \
+          --region us-central1 \
+          --allow-unauthenticated
